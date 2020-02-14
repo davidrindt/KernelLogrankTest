@@ -18,6 +18,9 @@ David Rindt, Dino Sejdinovic, David Steinsaltz. [url](https://arxiv.org/abs/1906
 5. examples.py simulates an example dataset and runs the different tests on this simulated dataset.
 6. all the 'exp_' files, exp_dim_range.py, exp_larger_n_values_range.py, exp_n_values_range.py, exp_parameter_range.py contain experiments of (1). These can be easily replicated. Running the code will ask for a scenario, method and choices of kernels. Note one may want to change the number of repeitions to calculate the power, depending on the time available.
 
+### Dependencies
+
+This repository uses the packages kerpy [url](https://github.com/oxmlcs/kerpy), pot [url](https://pot.readthedocs.io/en/stable/), lifelines [url](https://lifelines.readthedocs.io/en/latest/) and scipy, numpy, pandas, pickle, multiprocessing, matplotlib, dcor [url](https://pypi.org/project/dcor/). 
 
 ### Questions and Issues
 
