@@ -2,7 +2,7 @@
 
 ### Introduction
 
-This repository contains python code for two methods to test independence between a right-censored survival time $t$ and a covariate $X$, a random vector in any dimension. The methods are the Kernel Log rank test (1) and OptHsic (2). For the methods see
+This repository contains python code for two methods to test independence between a right-censored survival time T (censored by a censoring time C) and a covariate X, a random vector in any dimension. The methods are the Kernel Log rank test (1) and OptHsic (2). For the methods see
 
 (1) A kernel log-rank test of independence for right-censored data/ Tamara Fernandez, Arthur Gretton, David Rindt, Dino Sejdinovic. [url](https://arxiv.org/abs/1912.03784).
 
