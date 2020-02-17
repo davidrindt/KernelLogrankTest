@@ -13,11 +13,9 @@ def inv_inf_matrix(sorted_X,sorted_z,sorted_d,print_score=False):
     
     #Define S0[i] to be the number of individuals at risk at the i-th event.
     S0=n-np.arange(n)
-#    print('S0',S0)
     
     #Define S1[i,:] to be the sum of the covariates at risk at time i  
     S1=np.matmul(AR_matrix,sorted_X)
-#    print('S1',S1)
     
     
     #Define S2[i,:,:] to be the sum of outer products of the covariates that at risk at time i.
@@ -29,7 +27,6 @@ def inv_inf_matrix(sorted_X,sorted_z,sorted_d,print_score=False):
     S2[n-1,:,:]=sorted_X_expanded[n-1,:,:]
     for i in range(n-1):
         S2[n-2-i,:,:]=S2[n-1-i,:,:]+sorted_X_expanded[n-2-i]
-#    print('s2',S2)
     
     
     #Define the score vector
@@ -50,7 +47,6 @@ def inv_inf_matrix(sorted_X,sorted_z,sorted_d,print_score=False):
         information_matrix+=V[i,:,:]
     try:
         inverse_information_matrix=np.linalg.inv(information_matrix)
-#        print('yes')
     except:
         print('the pseudoinverse was used')
         inverse_information_matrix=np.linalg.pinv(information_matrix)
