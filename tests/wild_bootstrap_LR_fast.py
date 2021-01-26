@@ -10,16 +10,20 @@ import numpy as np
 import pandas as pd
 from multiprocessing import Pool
 import pickle
+#import scipy.spatial
+#from lifelines import CoxPHFitter
 import matplotlib.pyplot as plt
 from lifelines.statistics import logrank_test
 from FisherInformation import inv_inf_matrix
 from kerpy import LinearKernel
 from kerpy import GaussianKernel
 from kerpy import PolynomialKernel
+import time
+from wild_bootstrap_LR import wild_bootstrap_test_logrank_covariates
 
 
 
-def wild_bootstrap_test_logrank_covariates(x,z,d,kernel_x,kernel_z,alpha=0.05,seed=1,num_bootstrap_statistics=1999,print_score=False):
+def wild_bootstrap_test_logrank_covariates_fast(x,z,d,kernel_x,kernel_z,seed=1,num_bootstrap_statistics=1999,print_score=False):
     local_state=np.random.RandomState(seed)
     n=np.shape(x)[0]
 
@@ -32,12 +36,12 @@ def wild_bootstrap_test_logrank_covariates(x,z,d,kernel_x,kernel_z,alpha=0.05,se
     #Define Y_matrix[i,:] to be the vector of indicators who are at risk at the i-th event time.
     Y_matrix=np.triu(np.ones(n))
     #Define Y[i] count the number of individuals at risk at the i-th event time. 
-    Y=n-np.arange(n)
-    
+    Y=(np.arange(n,0,-1))
+    # print(Y)
     #Define A[i,:] to be a normalized (each row sums to 1) indicator of being at risk at time i. (note this is the transpose of A in our paper).
     scale_by_Y=np.diag(1/Y)
-    A=np.matmul(scale_by_Y,Y_matrix)
-
+    A=np.divide(Y_matrix,Y[:,None])
+    # print(A)
     #Define censoring_matrix[i,j] to be d[i]d[j]
     censoring_matrix=np.outer(d,d)
     
@@ -86,9 +90,20 @@ def wild_bootstrap_test_logrank_covariates(x,z,d,kernel_x,kernel_z,alpha=0.05,se
     #Define Lz to be the kernel matrix on Z, with elementwise multiplication of the censoring matrix.
     Lz=np.multiply(Kz,censoring_matrix)   
     
-    #Define the first_product matrix that we can re-use for computation in the wilde bootstrap.
-    first_product=np.matmul(np.matmul(I_minus_A,Kx),np.transpose(I_minus_A))
+    #Define the first_product matrix that we can re-use for computation in the wild bootstrap.
+    # print(A@Kx-np.divide(np.flip(np.cumsum(np.flip(Kx,axis=0),axis=0),axis=0),Y[:,None]))
+    # print(Kx@A- (np.cumsum(np.divide(Kx,Y[None,:]),axis=1)))
+    # print(Kx@A.T -  np.divide(np.flip(np.cumsum(np.flip(Kx,axis=1),axis=1),axis=1),Y[None,:]))
+    # M1=(Kx-np.divide(np.flip(np.cumsum(np.flip(Kx,axis=0),axis=0),axis=0),Y[:,None])) # (I-A)Kx
+    # first_product= M1-np.divide(np.flip(np.cumsum(np.flip(M1,axis=1),axis=1),axis=1),Y[None,:]) #M1(I-A)^T
+    M1=(Kx-np.divide(np.flip(np.cumsum(np.flip(Kx,axis=0),axis=0),axis=0),Y[:,None])) # (I-A)Kx
+    first_product= M1-np.divide(np.flip(np.cumsum(np.flip(M1,axis=1),axis=1),axis=1),Y[None,:]) #M1(I-A)^T
+    # first_product_check=np.matmul(np.matmul(I_minus_A,Kx),np.transpose(I_minus_A))
+    # print('heyehe',first_product-first_product_check)
+    
+    
     original_statistic=np.sum(np.multiply(first_product,Lz))
+    
     if print_score:
         print('the lr statistic is',original_statistic)
 
@@ -99,12 +114,43 @@ def wild_bootstrap_test_logrank_covariates(x,z,d,kernel_x,kernel_z,alpha=0.05,se
         W=local_state.binomial(1,1/2,size=n)*2-1
         WM=np.outer(W,W)
         bootstrapLz=np.multiply(WM,Lz)
-        multmatrix=np.multiply(first_product,bootstrapLz)
-        bootstrap_statistic=np.sum(multmatrix)
+        # multmatrix=np.multiply(first_product,bootstrapLz)
+        bootstrap_statistic=np.sum(np.multiply(first_product,bootstrapLz))
         statistic_list[b+1]=bootstrap_statistic
         
 
     vec=pd.Series(statistic_list)
     vec=vec.sample(frac=1).rank(method='first')
     k=vec[0]
-    return((num_bootstrap_statistics-k+2)/(num_bootstrap_statistics+1))
+#        print('vec',vec)
+    if k>=.95*(num_bootstrap_statistics+1)+1:
+        result=1
+    else:
+        result=0
+    return(result)
+
+# if __name__=='__main__':
+#     local_state=np.random.RandomState(1)
+    
+    
+#     n=5000
+#     x=local_state.uniform(low=-1,high=1,size=n)
+#     t=np.zeros(n)
+#     for v in range(n):
+#         t[v]=local_state.exponential(np.exp((x[v]/3)))
+#     c=local_state.exponential(scale=1.5,size=n)
+#     x=x[:,None]
+#     d= np.int64(c > t)
+#     z=np.minimum(t,c)
+    
+#     x=x-np.mean(x,axis=0)
+#     x=x/np.std(x,axis=0,ddof=1)       
+#     start=time.time()
+#     print(wild_bootstrap_test_logrank_covariates_fast(x, z, d, 'lin', 'con',num_bootstrap_statistics=0,print_score=True))
+#     stop=time.time()
+#     print('it took',stop-start)
+    
+#     start=time.time()
+#     print(wild_bootstrap_test_logrank_covariates(x, z, d, 'lin', 'con',num_bootstrap_statistics=0,print_score=True))
+#     stop=time.time()
+#     print('it took',stop-start)
