@@ -17,7 +17,11 @@ def download_from_rdatasets(package, name):
     url = info.CSV 
     return pd.read_csv(url), info
 
-a = download_from_rdatasets('survival', 'gbsg')
 
-print(len(a))
-print(type(a[0]))
+if __name__ == '__main__':
+    
+    dataset_name = 'gastric'
+    package_name = 'YPmodel'
+    
+    df = download_from_rdatasets(package_name, dataset_name)[0]
+    df.to_csv(dataset_name + '.csv')

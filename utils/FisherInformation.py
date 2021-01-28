@@ -4,7 +4,7 @@ from multiprocessing import Pool
 import pickle
 
 
-def inv_inf_matrix(sorted_X,sorted_z,sorted_d,print_score=False):
+def inv_inf_matrix(sorted_X, sorted_d, print_score=False):
     n=np.shape(sorted_X)[0]
     p=np.shape(sorted_X)[1]
     

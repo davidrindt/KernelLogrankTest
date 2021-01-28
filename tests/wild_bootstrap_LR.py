@@ -5,18 +5,11 @@ Created on Sat Jul 20 21:45:47 2019
 
 @author: david.rindt
 """
-
+import sys
+sys.path.append('../utils')
 import numpy as np
 import pandas as pd
-from multiprocessing import Pool
-import pickle
-import matplotlib.pyplot as plt
-from lifelines.statistics import logrank_test
-from FisherInformation import inv_inf_matrix
-from kerpy import LinearKernel
-from kerpy import GaussianKernel
-from kerpy import PolynomialKernel
-
+from get_kernel_matrix import get_kernel_matrix
 
 
 def wild_bootstrap_test_logrank_covariates(x,
@@ -24,11 +17,9 @@ def wild_bootstrap_test_logrank_covariates(x,
                                            d,
                                            kernel_x,
                                            kernel_z,
-                                           alpha=0.05,
                                            seed=1,
-                                           num_bootstrap_statistics=1999,
-                                           print_score=False,
-                                           fast_computation=True):
+                                           num_bootstrap_statistics = 1999,
+                                           fast_computation = False):
     
     local_state=np.random.RandomState(seed)
     n=np.shape(x)[0]
@@ -55,43 +46,9 @@ def wild_bootstrap_test_logrank_covariates(x,
     I_minus_A=np.identity(n)-A
     
 
-    #Define the kernel matrix on X
-    if kernel_x=='linfis':
-        inverse_inf_matrix=inv_inf_matrix(sorted_X=x,sorted_z=z,sorted_d=d,print_score=print_score)
-        Kx=np.matmul(np.matmul(x,inverse_inf_matrix),np.transpose(x))
-    elif kernel_x=='lin':
-        k=LinearKernel.LinearKernel()
-        Kx=k.kernel(x)   
-    elif kernel_x=='gau':
-        k=GaussianKernel.GaussianKernel()
-        k.width = k.get_sigma_median_heuristic(x)
-        Kx=k.kernel(x)
-    elif kernel_x=='pol':
-        k=PolynomialKernel.PolynomialKernel(degree=2)
-        Kx=k.kernel(x)
-    elif kernel_x=='gaufis':
-        inverse_inf_matrix=inv_inf_matrix(sorted_X=x,sorted_z=z,sorted_d=d)
-        #We first compute an matrix M such that matrix_M[i,j]=x[i]^TVx[i]+x[j]^TVx[j]-2x[i]^TVx[j]=matrix_A[i,j]+matrix_A[j,i]-2matrix_C[i,j]
-        matrix_C=np.matmul(np.matmul(x,inverse_inf_matrix),np.transpose(x))
-        matrix_A=np.matmul(np.ones((n,n)),np.diag(np.diag(matrix_C)))
-        matrix_M=matrix_A+np.transpose(matrix_A)-2*matrix_C
-        sigma=np.median(matrix_M)
-        Kx=np.exp(-matrix_M/(2*sigma))
-    else:
-        print('kernel_x: choose from linfis, lin, gau, pol, gaufis')
+    Kx = get_kernel_matrix(x, kernel_x, bandwidth=None, d=d)
+    Kz = get_kernel_matrix(z[:,None], kernel_z, bandwidth=None, d=d)
 
-    #Define the kernel matrix on Z
-    if kernel_z=='gau':
-        l=GaussianKernel.GaussianKernel()
-        l.width = l.get_sigma_median_heuristic(z[:,np.newaxis])
-        Kz=l.kernel(z[:,np.newaxis])
-    elif kernel_z=='con':
-        Kz=np.ones((n,n))
-    elif kernel_z=='pol':
-        l=PolynomialKernel.PolynomialKernel(degree=2)
-        Kz=k.kernel(z[:,np.newaxis])
-    else:
-        print('kernel_z: choose from gau, con')
 
     #Define Lz to be the kernel matrix on Z, with elementwise multiplication of the censoring matrix.
     Lz=np.multiply(Kz,censoring_matrix)   
@@ -106,8 +63,6 @@ def wild_bootstrap_test_logrank_covariates(x,
         
         
     original_statistic=np.sum(np.multiply(first_product,Lz))
-    if print_score:
-        print('the lr statistic is',original_statistic)
 
     statistic_list=np.zeros(num_bootstrap_statistics+1)
     statistic_list[0]=original_statistic
@@ -124,8 +79,30 @@ def wild_bootstrap_test_logrank_covariates(x,
     vec=pd.Series(statistic_list)
     vec=vec.sample(frac=1).rank(method='first')
     k=vec[0]
-    return((num_bootstrap_statistics-k+2)/(num_bootstrap_statistics+1))
+    return original_statistic, (num_bootstrap_statistics-k+2)/(num_bootstrap_statistics+1)
     
     
 if __name__ == '__main__':
-    print('hey')
+    
+    # Generate some data
+    local_state = np.random.RandomState(1)
+    n = 200
+    dim = 10
+    x = local_state.multivariate_normal(mean=np.zeros(dim), cov=np.identity(dim),size=n)
+    c = np.zeros(n)
+    rowsum = np.sum(x,axis=1)
+    for v in range(n):
+        c[v] = local_state.exponential(np.exp((rowsum[v]/8)))
+    t = local_state.exponential(.6,size=n)
+    d = np.int64(c > t)
+    z = np.minimum(t,c)
+    
+    # Run the test
+    print(wild_bootstrap_test_logrank_covariates(x, z, d, 'gau', 'gau'))
+    print(wild_bootstrap_test_logrank_covariates(x, z, d, 'gau', 'gau', fast_computation=True))
+    
+    
+    
+    
+    
+    
