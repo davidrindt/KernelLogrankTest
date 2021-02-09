@@ -9,7 +9,7 @@ import sys
 sys.path.append('../utils')
 import numpy as np
 import pandas as pd
-from get_kernel_matrix import get_kernel_matrix
+import get_kernel_matrix
 
 
 def wild_bootstrap_test_logrank_covariates(x,
@@ -46,8 +46,8 @@ def wild_bootstrap_test_logrank_covariates(x,
     I_minus_A=np.identity(n)-A
     
 
-    Kx = get_kernel_matrix(x, kernel_x, bandwidth=None, d=d)
-    Kz = get_kernel_matrix(z[:,None], kernel_z, bandwidth=None, d=d)
+    Kx = get_kernel_matrix.get_kernel_matrix(x, kernel_x, bandwidth=None, d=d)
+    Kz = get_kernel_matrix.get_kernel_matrix(z[:,None], kernel_z, bandwidth=None, d=d)
 
 
     #Define Lz to be the kernel matrix on Z, with elementwise multiplication of the censoring matrix.

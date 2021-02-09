@@ -8,6 +8,8 @@ Created on Wed Jan 27 15:19:48 2021
 
 import sys
 sys.path.append('../../tests')
+sys.path.append('../../utils')
+import numpy as np
 from wild_bootstrap_LR import wild_bootstrap_test_logrank_covariates
 from lifelines.statistics import logrank_test
 import pandas as pd
@@ -21,7 +23,7 @@ z = gastric.V1.values
 d = gastric.V2.values
 x = gastric.V3.values
 x = x[:, None]
-print(wild_bootstrap_test_logrank_covariates(x, z, d, kernel_x='euc', kernel_z='con', seed=1, num_bootstrap_statistics = 200000, fast_computation = True))
+print(wild_bootstrap_test_logrank_covariates(x, z, d, kernel_x='euc', kernel_z='gau', seed=1, num_bootstrap_statistics = 1000000, fast_computation = True))
 
 
 

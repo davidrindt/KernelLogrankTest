@@ -5,18 +5,21 @@ Created on Wed Jan 27 12:14:34 2021
 
 @author: rindt
 """
-
+import sys
 import numpy as np
 from FisherInformation import inv_inf_matrix
 from kerpy import LinearKernel
 from kerpy import GaussianKernel
 from kerpy import PolynomialKernel
+
+
 from scipy.spatial.distance import pdist, squareform
 
 def get_kernel_matrix(X, kernel, bandwidth=None, d=None):
     '''
     NOTE: X and d need to be sorted by event time Z
     '''
+    X = ( X - X.mean(axis=0) ) / X.std(axis=0)
     n = X.shape[0]
     if kernel=='linfis':
         inverse_inf_matrix = inv_inf_matrix(sorted_X=X, sorted_d=d)
@@ -33,7 +36,8 @@ def get_kernel_matrix(X, kernel, bandwidth=None, d=None):
         Kx = k.kernel(X)
     elif kernel == 'euc':
         v = pdist(X, metric= 'euclidean')
-        Kx = 1 - squareform(v)    
+        a = np.linalg.norm(X, axis=1)[:,None]
+        Kx = (a + a.T - squareform(v))/2    
     elif kernel == 'con':
         Kx = np.ones((n,n))
     else: 
@@ -42,9 +46,12 @@ def get_kernel_matrix(X, kernel, bandwidth=None, d=None):
     
 
 if __name__ == '__main__':
-    X = np.random.binomial(1, 0.5, size=10)
+    n=6
+    X = np.random.binomial(1, 0.5, size=n)
     X = X[:, None]
+    print('X', X)
     print(get_kernel_matrix(X, 'euc'))
+    
     
     
     
