@@ -79,7 +79,7 @@ def wild_bootstrap_test_logrank_covariates(x,
     vec=pd.Series(statistic_list)
     vec=vec.sample(frac=1).rank(method='first')
     k=vec[0]
-    return original_statistic, (num_bootstrap_statistics-k+2)/(num_bootstrap_statistics+1)
+    return original_statistic, (num_bootstrap_statistics-k+1)/(num_bootstrap_statistics+1)
     
     
 if __name__ == '__main__':

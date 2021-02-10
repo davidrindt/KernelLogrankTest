@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 from survival_scatter_plot import survival_scatter_plot
 import wild_bootstrap_LR 
+from CPH_test import CPH_test
 kidney = pd.read_csv('../../data/kidney.csv')
 kidney_male = kidney[kidney.sex == 1]
 kidney_female = kidney[kidney.sex == 2]
@@ -47,7 +48,7 @@ print(X)
 z = kidney.time.values
 d = kidney.status.values
 
-B = int(10e6)
+B = int(10e3)
 v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(x=X, z=z, d=d, kernel_x='lin', kernel_z='con', num_bootstrap_statistics=B)
 print('lin, con', p, v)
 v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(x=X, z=z, d=d, kernel_x='gau', kernel_z='con', num_bootstrap_statistics=B)
@@ -58,3 +59,53 @@ v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(x=X, z=z, d=d, k
 print('linfis, con', p, v)
 v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(x=X, z=z, d=d, kernel_x='linfis', kernel_z='gau', num_bootstrap_statistics=B)
 print('linfis, gau', p, v)
+
+#
+## Overall test if time depends on (age, sex, frail).
+#
+#X = kidney[['age', 'sex', 'frail']]
+#print(X)
+#X = np.array(X)
+#print(X)
+#z = kidney.time.values
+#d = kidney.status.values
+#
+#B = int(10e3)
+#v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(x=X, z=z, d=d, kernel_x='lin', kernel_z='con', num_bootstrap_statistics=B)
+#print('lin, con', p, v)
+#v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(x=X, z=z, d=d, kernel_x='gau', kernel_z='con', num_bootstrap_statistics=B)
+#print('gau, con', p, v)
+#v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(x=X, z=z, d=d, kernel_x='gau', kernel_z='gau', num_bootstrap_statistics=B)
+#print('gua, gau', p, v)
+#v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(x=X, z=z, d=d, kernel_x='linfis', kernel_z='con', num_bootstrap_statistics=B)
+#print('linfis, con', p, v)
+#v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(x=X, z=z, d=d, kernel_x='linfis', kernel_z='gau', num_bootstrap_statistics=B)
+#print('linfis, gau', p, v)
+#
+
+
+
+# Subsample rows
+s_kidney = kidney[['time', 'status', 'age', 'sex', 'frail']]
+s_kidney = s_kidney.sample(50)
+
+X = np.array(s_kidney[['age', 'sex', 'frail']])
+z = s_kidney.time.values
+d = s_kidney.status.values
+print(s_kidney)
+print(X)
+
+B = int(10e5)
+v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(x=X, z=z, d=d, kernel_x='lin', kernel_z='con', num_bootstrap_statistics=B)
+print('lin, con', p, v)
+v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(x=X, z=z, d=d, kernel_x='gau', kernel_z='con', num_bootstrap_statistics=B)
+print('gau, con', p, v)
+v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(x=X, z=z, d=d, kernel_x='gau', kernel_z='gau', num_bootstrap_statistics=B)
+print('gua, gau', p, v)
+v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(x=X, z=z, d=d, kernel_x='linfis', kernel_z='con', num_bootstrap_statistics=B)
+print('linfis, con', p, v)
+v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(x=X, z=z, d=d, kernel_x='linfis', kernel_z='gau', num_bootstrap_statistics=B)
+print('linfis, gau', p, v)
+print(X)
+
+print('CPH test', CPH_test(X, z, d))
