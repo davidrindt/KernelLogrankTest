@@ -19,14 +19,12 @@ import wild_bootstrap_LR  as wild_bootstrap_LR
 import pickle
 import h5py
 
-melanoma = pd.read_csv('../../data/melanoma')
-ulcer_map = {'Present': 1,
-             'Absent': 0}
-status_map = {'Died from other causes': 0,
-              'Alive': 0,
-              'Died from melanoma': 1}
-sex_map = {'Male': 0,
-           'Female': 1}
+loan_data = pd.read_csv('../../data/loan_data')
+print(loan_data)
+
+IsBorrowerHomeowner_map = {'False': 0,
+             'True': 1}
+
 
 melanoma.ulcer = melanoma.ulcer.map(ulcer_map)
 melanoma.sex = melanoma.sex.map(sex_map)

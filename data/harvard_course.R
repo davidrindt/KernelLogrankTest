@@ -6,7 +6,6 @@ library(survminer)
 library(clustcurv)
 library(ggplot2)
 
-<<<<<<< HEAD
 # First we start with loading the dataset
 data("melanoma", package = "boot")
 
@@ -27,9 +26,7 @@ melanoma %<>%
                       levels = 0:1,
                       labels = c("Female", "Male")))
 write.csv(melanoma, 'melanoma')
-=======
 
->>>>>>> ab57d3346af9a60a055be54144eb5cd78bc10579
 
 data("leukemia")
 a = data.frame(leukemia)
@@ -37,14 +34,11 @@ write.csv(leukemia, 'leukemia')
 web <- "https://s3.amazonaws.com/udacity-hosted-downloads/ud651/prosperLoanData.csv"
 loan <- read.csv(web)
 
-<<<<<<< HEAD
 # loan_nd <- loan[unique(loan$LoanKey), ] 
 loan_nd <- distinct(loan, LoanKey)
 loan_nd <- loan[!duplicated(loan$LoanKey), ]
-=======
-loan_nd <- loan[unique(loan$LoanKey), ] 
+# loan_nd <- loan[unique(loan$LoanKey), ] 
 
->>>>>>> ab57d3346af9a60a055be54144eb5cd78bc10579
 # removing LoanStatus no needed 
 sel_status  <- loan_nd$LoanStatus %in% c("Completed", "Current", 
                                          "ChargedOff", "Defaulted", 
@@ -74,15 +68,12 @@ loan_filtered <- loan_filtered[-loan_filtered$time < 0, ]
 ii <- format(as.Date(loan_filtered$LoanOriginationDate),'%Y') %in% c("2006")
 loan_filtered <- loan_filtered[ii, ] 
 
-<<<<<<< HEAD
 loan_filtered$LoanOriginalAmount2 <-  loan_filtered$LoanOriginalAmount/10000
 
 
-to_save_data <- loan_filtered[, c("IsBorrowerHomeowner", "LoanOriginalAmount2")]
+to_save_data <- loan_filtered[, c("IsBorrowerHomeowner", "LoanOriginalAmount2", 'time', 'status')]
 
 write.csv(to_save_data, 'loan_data')
-=======
->>>>>>> ab57d3346af9a60a055be54144eb5cd78bc10579
 
 # b = a[-c(21),] 
 # mfit <- coxph(Surv(time, status) ~ sex + pspline(age, df=3), data=kidney)
