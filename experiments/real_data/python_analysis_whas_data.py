@@ -19,25 +19,17 @@ import wild_bootstrap_LR  as wild_bootstrap_LR
 import pickle
 import h5py
 
+covariate_columns = {i:'x' + str(i+1) for i in range(6)}
+covariates = covariate_columns.values()
 with h5py.File('../../data/whas_train_test.h5', 'r') as f:
     train_data = f['train']
+    print(pd.DataFrame(train_data['x']))
     x_full = pd.DataFrame(train_data['x']).rename(columns=covariate_columns)
     z_full = pd.DataFrame(train_data['t']).rename(columns={0:'z'})
     d_full = pd.DataFrame(train_data['e']).rename(columns={0:'d'})
     full_data = pd.DataFrame(pd.concat([x_full, z_full, d_full], axis=1))
-loan_data = pd.read_csv('../../data/loan_data')
-print(loan_data)
 
-IsBorrowerHomeowner_map = {True: 0,
-             False: 1}
-
-
-loan_data.IsBorrowerHomeowner = loan_data.IsBorrowerHomeowner.map(IsBorrowerHomeowner_map)
-print(loan_data)
-full_data = loan_data
-covariates = ['LoanOriginalAmount2', 'IsBorrowerHomeowner']
-
-sample_size = 1000
+sample_size = 20
 B = 1000
 num_repetitions = 10
 kernels = [
@@ -56,8 +48,8 @@ for repetition in range(num_repetitions):
     print(repetition)
     data = pd.DataFrame(full_data.sample(sample_size))
     x = np.array(data[covariates])
-    z = np.array(data.time)
-    d = np.array(data.status)
+    z = np.array(data.z)
+    d = np.array(data.d)
     for kernel in kernels:
         kx, kz = kernel
         v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
