@@ -1,9 +1,9 @@
 library('survival')
 
-data("diabetic")
-a = data.frame(diabetic)
+data("leukemia")
+a = data.frame(leukemia)
 
-write.csv(diabetic, 'diabetic')
+write.csv(leukemia, 'leukemia')
 
 # b = a[-c(21),] 
 # mfit <- coxph(Surv(time, status) ~ sex + pspline(age, df=3), data=kidney)
@@ -15,12 +15,12 @@ write.csv(diabetic, 'diabetic')
 
 
 
-mfit <- coxph(Surv(time, status) ~ . , data=diabetic)
+mfit <- coxph(Surv(time, status) ~ trt + pspline(risk, df=0), data=diabetic)
 mfit
-# termplot(mfit, term=2, se=TRUE, col.term=1, col.se=1)
-# 
-# ptemp <- termplot(mfit, se=TRUE, plot=FALSE)
-# attributes(ptemp)
+termplot(mfit, term=2, se=TRUE, col.term=1, col.se=1)
+
+ptemp <- termplot(mfit, se=TRUE, plot=FALSE)
+attributes(ptemp)
 
 
 

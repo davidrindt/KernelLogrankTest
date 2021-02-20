@@ -10,11 +10,19 @@ import sys
 sys.path.append('../../utils')
 sys.path.append('../../data')
 sys.path.append('../../tests')
+<<<<<<< HEAD
 from tests.CPH_test import CPH_test as CPH_test
 import numpy as np
 import pandas as pd
 from utils.survival_scatter_plot import survival_scatter_plot
 import tests.wild_bootstrap_LR  as wild_bootstrap_LR
+=======
+from CPH_test import CPH_test
+import numpy as np
+import pandas as pd
+from survival_scatter_plot import survival_scatter_plot
+import wild_bootstrap_LR 
+>>>>>>> ab57d3346af9a60a055be54144eb5cd78bc10579
 import pickle
 diabetic = pd.read_csv('../../data/diabetic.csv')
 diabetic.laser = pd.to_numeric(diabetic.laser, errors='ignore')
