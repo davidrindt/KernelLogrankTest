@@ -22,20 +22,18 @@ import h5py
 loan_data = pd.read_csv('../../data/loan_data')
 print(loan_data)
 
-IsBorrowerHomeowner_map = {'False': 0,
-             'True': 1}
+IsBorrowerHomeowner_map = {True: 0,
+             False: 1}
 
 
-melanoma.ulcer = melanoma.ulcer.map(ulcer_map)
-melanoma.sex = melanoma.sex.map(sex_map)
-melanoma.status = melanoma.status.map(status_map)
+loan_data.IsBorrowerHomeowner = loan_data.IsBorrowerHomeowner.map(IsBorrowerHomeowner_map)
+print(loan_data)
+full_data = loan_data
+covariates = ['LoanOriginalAmount2', 'IsBorrowerHomeowner']
 
-full_data = melanoma
-covariates = ['sex', 'age', 'year', 'thickness', 'ulcer']
-
-sample_size = 80
+sample_size = 1000
 B = 1000
-num_repetitions = 100
+num_repetitions = 10
 kernels = [
     # ['linfis', 'con'],
     # ['lin', 'con'],
@@ -49,6 +47,7 @@ for kx, kz in kernels:
     p_value_dict[kx + kz] = 0
 
 for repetition in range(num_repetitions):
+    print(repetition)
     data = pd.DataFrame(full_data.sample(sample_size))
     x = np.array(data[covariates])
     z = np.array(data.time)
