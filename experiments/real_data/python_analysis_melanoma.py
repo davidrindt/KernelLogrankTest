@@ -51,7 +51,7 @@ p_value_dict['cph_test'] = 0
 for kx, kz in kernels:
     p_value_dict[kx + kz] = 0
 
-
+print('hey')
 for repetition in range(num_repetitions):
     data = pd.DataFrame(full_data.sample(sample_size))
     x = np.array(data[covariates])
