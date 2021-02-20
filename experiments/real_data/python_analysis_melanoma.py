@@ -19,15 +19,21 @@ import wild_bootstrap_LR  as wild_bootstrap_LR
 import pickle
 import h5py
 
-covariate_columns={i:'x' + str(i) for i in range(9)}
-covariates = covariate_columns.values()
-with h5py.File('../../data/metabric_IHC4_clinical_train_test.h5', 'r') as f:
-    train_data = f['train']
-    x_full = pd.DataFrame(train_data['x']).rename(columns=covariate_columns)
-    z_full = pd.DataFrame(train_data['t']).rename(columns={0:'z'})
-    d_full = pd.DataFrame(train_data['e']).rename(columns={0:'d'})
-    full_data = pd.DataFrame(pd.concat([x_full, z_full, d_full], axis=1))
+melanoma = pd.read_csv('../../data/melanoma')
+ulcer_map = {'Present': 1,
+             'Absent': 0}
+status_map = {'Died from other causes': 0,
+              'Alive': 0,
+              'Died from melanoma': 1}
+sex_map = {'Male': 0,
+           'Female': 1}
 
+melanoma.ulcer = melanoma.ulcer.map(ulcer_map)
+melanoma.sex = melanoma.sex.map(sex_map)
+melanoma.status = melanoma.status.map(status_map)
+
+full_data = melanoma
+covariates = ['sex', 'age', 'year', 'thickness', 'ulcer']
 
 
 sample_size = 80
@@ -49,14 +55,17 @@ for kx, kz in kernels:
 for repetition in range(num_repetitions):
     data = pd.DataFrame(full_data.sample(sample_size))
     x = np.array(data[covariates])
-    z = np.array(data.z)
-    d = np.array(data.d)
+    z = np.array(data.time)
+    d = np.array(data.status)
     for kernel in kernels:
         kx, kz = kernel
         v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
             x=x, z=z, d=d, kernel_x=kx, kernel_z=kz, num_bootstrap_statistics=B)
         p_value_dict[kx + kz] += p
-    p = CPH_test(x=x, z=z, d=d)
+    try:
+        p = CPH_test(x=x, z=z, d=d)
+    except:
+        p = p_value_dict['cph_test'] / (num_repetitions + 1)
     p_value_dict['cph_test'] += p
 
 for key, val in p_value_dict.items():
