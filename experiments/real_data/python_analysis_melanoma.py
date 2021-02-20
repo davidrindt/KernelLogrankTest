@@ -35,7 +35,7 @@ melanoma.status = melanoma.status.map(status_map)
 full_data = melanoma
 covariates = ['sex', 'age', 'year', 'thickness', 'ulcer']
 
-
+print('eeeeeeeeeeeeeeeeeeeeeeeee')
 sample_size = 80
 B = 1000
 num_repetitions = 100
@@ -51,7 +51,6 @@ p_value_dict['cph_test'] = 0
 for kx, kz in kernels:
     p_value_dict[kx + kz] = 0
 
-print('hey')
 for repetition in range(num_repetitions):
     data = pd.DataFrame(full_data.sample(sample_size))
     x = np.array(data[covariates])
