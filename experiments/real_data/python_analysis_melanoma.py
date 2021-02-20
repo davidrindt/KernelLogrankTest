@@ -35,7 +35,6 @@ melanoma.status = melanoma.status.map(status_map)
 full_data = melanoma
 covariates = ['sex', 'age', 'year', 'thickness', 'ulcer']
 
-print('eeeeeeeeeeeeeeeeeeeeeeeee')
 sample_size = 80
 B = 1000
 num_repetitions = 100
