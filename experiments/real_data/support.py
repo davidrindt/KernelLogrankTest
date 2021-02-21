@@ -19,9 +19,9 @@ import wild_bootstrap_LR  as wild_bootstrap_LR
 import pickle
 import h5py
 
-covariate_columns={i:'x' + str(i) for i in range(9)}
+covariate_columns={i:'x' + str(i) for i in range(14)}
 covariates = covariate_columns.values()
-with h5py.File('../../data/metabric_IHC4_clinical_train_test.h5', 'r') as f:
+with h5py.File('../../data/support_train_test.h5', 'r') as f:
     train_data = f['train']
     x_full = pd.DataFrame(train_data['x']).rename(columns=covariate_columns)
     z_full = pd.DataFrame(train_data['t']).rename(columns={0:'z'})
@@ -30,15 +30,15 @@ with h5py.File('../../data/metabric_IHC4_clinical_train_test.h5', 'r') as f:
 
 
 
-sample_size = 80
+sample_size = 1000
 B = 1000
 num_repetitions = 100
 kernels = [
-    ['linfis', 'con'],
-    ['lin', 'con'],
+    # ['linfis', 'con'],
+    # ['lin', 'con'],
     ['gau', 'con'],
     ['gau', 'gau'],
-    ['lin', 'gau'],
+    # ['lin', 'gau'],
 ]
 p_value_dict = {}
 p_value_dict['cph_test'] = 0
@@ -56,7 +56,11 @@ for repetition in range(num_repetitions):
         v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
             x=x, z=z, d=d, kernel_x=kx, kernel_z=kz, num_bootstrap_statistics=B)
         p_value_dict[kx + kz] += p
-    p = CPH_test(x=x, z=z, d=d)
+    try:
+        p = CPH_test(x=x, z=z, d=d)
+    except:
+        p = p_value_dict['cph_test'] / (num_repetitions + 1)
+        print('error in cph')
     p_value_dict['cph_test'] += p
 
 for key, val in p_value_dict.items():
