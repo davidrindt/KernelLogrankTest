@@ -32,7 +32,7 @@ with h5py.File('../../data/support_train_test.h5', 'r') as f:
 
 sample_size = 1000
 B = 1000
-num_repetitions = 100
+num_repetitions = 10
 kernels = [
     # ['linfis', 'con'],
     # ['lin', 'con'],
@@ -47,6 +47,7 @@ for kx, kz in kernels:
 
 
 for repetition in range(num_repetitions):
+    print(repetition)
     data = pd.DataFrame(full_data.sample(sample_size))
     x = np.array(data[covariates])
     z = np.array(data.z)
