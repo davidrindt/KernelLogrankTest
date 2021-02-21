@@ -30,9 +30,9 @@ with h5py.File('../../data/support_train_test.h5', 'r') as f:
 
 
 
-sample_size = 1000
+sample_size = 250
 B = 1000
-num_repetitions = 10
+num_repetitions = 200
 kernels = [
     # ['linfis', 'con'],
     # ['lin', 'con'],
