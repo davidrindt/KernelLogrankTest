@@ -19,6 +19,8 @@ import wild_bootstrap_LR  as wild_bootstrap_LR
 import pickle
 import h5py
 
+np.random.seed(1)
+
 loan_data = pd.read_csv('../../data/loan_data')
 print(loan_data)
 
@@ -32,8 +34,8 @@ full_data = loan_data
 covariates = ['LoanOriginalAmount2', 'IsBorrowerHomeowner']
 
 sample_size = 1000
-B = 1000
-num_repetitions = 10
+B = 10000
+num_repetitions = 1000
 kernels = [
     # ['linfis', 'con'],
     # ['lin', 'con'],

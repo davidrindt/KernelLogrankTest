@@ -14,6 +14,8 @@ from wild_bootstrap_LR import wild_bootstrap_test_logrank_covariates
 from lifelines.statistics import logrank_test
 import pandas as pd
 
+np.random.seed(1)
+
 
 gastric = pd.read_csv('../../data/gastric.csv')
 print(gastric)

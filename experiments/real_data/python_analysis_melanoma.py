@@ -19,6 +19,8 @@ import wild_bootstrap_LR  as wild_bootstrap_LR
 import pickle
 import h5py
 
+np.random.seed(1)
+
 melanoma = pd.read_csv('../../data/melanoma')
 ulcer_map = {'Present': 1,
              'Absent': 0}
@@ -35,9 +37,9 @@ melanoma.status = melanoma.status.map(status_map)
 full_data = melanoma
 covariates = ['sex', 'age', 'year', 'thickness', 'ulcer']
 
-sample_size = 80
-B = 1000
-num_repetitions = 100
+sample_size = 70
+B = 10000
+num_repetitions = 1000
 kernels = [
     # ['linfis', 'con'],
     # ['lin', 'con'],
@@ -51,6 +53,7 @@ for kx, kz in kernels:
     p_value_dict[kx + kz] = 0
 
 for repetition in range(num_repetitions):
+    print(repetition)
     data = pd.DataFrame(full_data.sample(sample_size))
     x = np.array(data[covariates])
     z = np.array(data.time)

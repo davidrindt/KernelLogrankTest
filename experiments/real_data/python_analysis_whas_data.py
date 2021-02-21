@@ -19,6 +19,8 @@ import wild_bootstrap_LR  as wild_bootstrap_LR
 import pickle
 import h5py
 
+np.random.seed(1)
+
 covariate_columns = {i:'x' + str(i+1) for i in range(6)}
 covariates = covariate_columns.values()
 with h5py.File('../../data/whas_train_test.h5', 'r') as f:

@@ -19,6 +19,8 @@ import wild_bootstrap_LR  as wild_bootstrap_LR
 import pickle
 import h5py
 
+np.random.seed(1)
+
 covariate_columns={i:'x' + str(i) for i in range(14)}
 covariates = covariate_columns.values()
 with h5py.File('../../data/support_train_test.h5', 'r') as f:
@@ -30,7 +32,7 @@ with h5py.File('../../data/support_train_test.h5', 'r') as f:
 
 
 
-sample_size = 250
+sample_size = 300
 B = 1000
 num_repetitions = 200
 kernels = [
