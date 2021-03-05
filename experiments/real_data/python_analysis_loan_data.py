@@ -21,21 +21,25 @@ import h5py
 
 np.random.seed(1)
 
+
+# Load data
+
 loan_data = pd.read_csv('../../data/loan_data')
 print(loan_data)
-
 IsBorrowerHomeowner_map = {True: 0,
              False: 1}
-
-
 loan_data.IsBorrowerHomeowner = loan_data.IsBorrowerHomeowner.map(IsBorrowerHomeowner_map)
-print(loan_data)
+print(loan_data.shape)
 full_data = loan_data
 covariates = ['LoanOriginalAmount2', 'IsBorrowerHomeowner']
 
+
+
+# Do experiment
+
 sample_size = 1000
-B = 10000
-num_repetitions = 1000
+B = 1000
+num_repetitions = 20
 kernels = [
     # ['linfis', 'con'],
     # ['lin', 'con'],

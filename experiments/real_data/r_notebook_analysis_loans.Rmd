@@ -1,0 +1,114 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+library(survival)
+# library(condSURV)
+# library(JM)
+# library(dplyr)
+# library(survminer)
+# library(clustcurv)
+library(psych)
+library(ggplot2)
+```
+
+
+
+```{r}
+web <- "https://s3.amazonaws.com/udacity-hosted-downloads/ud651/prosperLoanData.csv"
+loan <- read.csv(web)
+
+# Remove duplicates by LoanKey
+loan_nd <- loan[!duplicated(loan$LoanKey), ]
+
+# removing LoanStatus no needed
+sel_status  <- loan_nd$LoanStatus %in% c("Completed", "Current",
+                                         "ChargedOff", "Defaulted",
+                                         "Cancelled")
+loan_filtered <- loan_nd[sel_status, ]
+
+# creating status variable for censoring
+loan_filtered$status <- ifelse(
+  loan_filtered$LoanStatus == "Defaulted" |
+    loan_filtered$LoanStatus == "Chargedoff",  1, 0)
+
+# adding the final date to "current" status
+head(levels(loan_filtered$ClosedDate))
+## [1] ""                    "2005-11-25 00:00:00" "2005-11-29 00:00:00"
+## [4] "2005-11-30 00:00:00" "2005-12-08 00:00:00" "2005-12-28 00:00:00"
+levels(loan_filtered$ClosedDate)[1] <- "2014-11-03 00:00:00"
+
+# creating the time-to-event variable
+loan_filtered$start <- as.Date(loan_filtered$LoanOriginationDate)
+loan_filtered$end <- as.Date(loan_filtered$ClosedDate)
+loan_filtered$time <- as.numeric(difftime(loan_filtered$end, loan_filtered$start, units = "days"))
+
+# there is an error in the data (time to event less than 0)
+loan_filtered <- loan_filtered[-loan_filtered$time < 0, ]
+
+# just considering a year of loans creation
+ii <- format(as.Date(loan_filtered$LoanOriginationDate),'%Y') %in% c("2006")
+loan_filtered <- loan_filtered[ii, ]
+
+loan_filtered$LoanOriginalAmount2 <-  loan_filtered$LoanOriginalAmount/10000
+
+
+loan_data_2006_cleaned <- loan_filtered
+write.csv(to_save_data, 'loan_data_2006_cleaned')
+
+```
+
+```{r}
+describe(loan_data_2006_cleaned)
+```
+```{r}
+print(sum(!complete.cases(loan_data_2006[,"BorrowerState"])))
+```
+
+
+```{r}
+# print(colSums(is.na(loan_data_2006)))
+loan_data_2006 = loan_data_2006_cleaned[, colSums(is.na(loan_data_2006_cleaned)) == 0]
+# loan_data_2006 = loan_data_2006[, colSums(is.na(loan_data_2006)) == 0]
+print(colSums(loan_data_2006 == '') == 0)
+```
+```{r}
+subset_data = loan_data_2006[, c("IsBorrowerHomeowner", "LoanOriginalAmount2", 'time', 'status')]
+```
+
+```{r}
+mfit <- coxph(Surv(time, status) ~ IsBorrowerHomeowner + LoanOriginalAmount2, data=subset_data)
+mfit
+termplot(mfit, term=2, se=TRUE, col.term=1, col.se=1)
+
+ptemp <- termplot(mfit, se=TRUE, plot=FALSE)
+```
+```{r}
+```
+
+
+```{r}
+mfit <- coxph(Surv(time, status) ~ IsBorrowerHomeowner + pspline(LoanOriginalAmount2,2) , data=subset_data)
+mfit
+termplot(mfit, term=2, se=TRUE, col.term=1, col.se=1)
+
+ptemp <- termplot(mfit, se=TRUE, plot=FALSE)
+```
+
+
+```{r}
+km_trt_fit <- survfit(Surv(time, status) ~ IsBorrowerHomeowner, data=subset_data)
+autoplot(km_trt_fit)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

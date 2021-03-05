@@ -21,25 +21,28 @@ import h5py
 
 np.random.seed(1)
 
-melanoma = pd.read_csv('../../data/melanoma')
-ulcer_map = {'Present': 1,
-             'Absent': 0}
-status_map = {'Died from other causes': 0,
-              'Alive': 0,
-              'Died from melanoma': 1}
-sex_map = {'Male': 0,
-           'Female': 1}
+colon = pd.read_csv('../../data/colon')
+colon = colon[ colon.etype == 2]
+colon = pd.get_dummies((colon))
+covariates = ['sex', 'age', 'obstruct', 'perfor', 'adhere', 'nodes', 'extent', 'surg', 'rx_Lev', 'rx_Lev+5FU']
+covariates_min_perfor = ['sex', 'age', 'obstruct', 'adhere', 'nodes', 'extent', 'surg', 'rx_Lev', 'rx_Lev+5FU']
+covariates = ['adhere', 'sex', 'extent']
+covariates = ['obstruct', 'sex', 'surg']
+covariates = ['age', 'sex'  ]
+covariates = ['adhere', 'sex'  ]
+covariates = ['sex', 'extent', 'surg']
+covariates = ['adhere', 'sex', 'surg']
+covariates = ['age', 'sex'  ]
 
-melanoma.ulcer = melanoma.ulcer.map(ulcer_map)
-melanoma.sex = melanoma.sex.map(sex_map)
-melanoma.status = melanoma.status.map(status_map)
 
-full_data = melanoma
-covariates = ['sex', 'age', 'year', 'thickness', 'ulcer']
+rows_with_na = colon.isna().any(axis=1)
+colon = colon[~rows_with_na]
+colon = colon[covariates + ['status', 'time' ]]
+full_data = colon
 
-sample_size = 70
+sample_size = 100
 B = 1000
-num_repetitions = 1000
+num_repetitions = 1
 kernels = [
     # ['linfis', 'con'],
     # ['lin', 'con'],
@@ -54,8 +57,10 @@ for kx, kz in kernels:
 
 for repetition in range(num_repetitions):
     print(repetition)
-    data = pd.DataFrame(full_data.sample(sample_size))
+    # data = pd.DataFrame(full_data.sample(sample_size))
+    data = full_data
     x = np.array(data[covariates])
+    print(x)
     z = np.array(data.time)
     d = np.array(data.status)
     for kernel in kernels:
