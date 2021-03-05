@@ -1,6 +1,10 @@
 ---
 title: "R Notebook"
-output: html_notebook
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document:
+    df_print: paged
 ---
 
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
@@ -56,37 +60,36 @@ loan_filtered <- loan_filtered[-loan_filtered$time < 0, ]
 ii <- format(as.Date(loan_filtered$LoanOriginationDate),'%Y') %in% c("2006")
 loan_filtered <- loan_filtered[ii, ]
 
-loan_filtered$LA <-  loan_filtered$LoanOriginalAmount/10000
+loan_filtered$LoanOriginalAmount2 <-  loan_filtered$LoanOriginalAmount/10000
 
 
-loan_data_2006_cleaned <- loan_filtered
-write.csv(to_save_data, 'loan_data_2006_cleaned')
+# write.csv(to_save_data, 'loan_data_2006_cleaned')
 
 ```
 
 ```{r}
-describe(loan_data_2006_cleaned)
+# describe(loan_filtered)
 ```
 
 
 I did not really analyse the entire dataset much. You'd have to filter it quite carefully. Many NA's are present. Also many ' ' empty strings are present.
 
 ```{r}
-print(sum(!complete.cases(loan_data_2006[,"BorrowerState"])))
+# print(sum(!complete.cases(loan_data_2006[,"BorrowerState"])))
 ```
 
 ```{r}
-# print(colSums(is.na(loan_data_2006)))
-loan_data_2006 = loan_data_2006_cleaned[, colSums(is.na(loan_data_2006_cleaned)) == 0]
-# loan_data_2006 = loan_data_2006[, colSums(is.na(loan_data_2006)) == 0]
-print(colSums(loan_data_2006 == '') == 0)
+# # print(colSums(is.na(loan_data_2006)))
+# loan_data_2006 = loan_data_2006_cleaned[, colSums(is.na(loan_data_2006_cleaned)) == 0]
+# # loan_data_2006 = loan_data_2006[, colSums(is.na(loan_data_2006)) == 0]
+# print(colSums(loan_data_2006 == '') == 0)
 ```
 
 Select the subset of the data:
 
 
 ```{r}
-subset_data = loan_data_2006[, c("IsBorrowerHomeowner", "LoanOriginalAmount2", 'time', 'status')]
+subset_data = loan_filtered[, c("IsBorrowerHomeowner", "LoanOriginalAmount2", 'time', 'status')]
 ```
 
 
@@ -114,7 +117,7 @@ We now plot the two KM curves for the binary variable IsBorrowerHomeowner. Actua
 
 ```{r}
 km_trt_fit <- survfit(Surv(time, status) ~ IsBorrowerHomeowner, data=subset_data)
-autoplot(km_trt_fit)
+# autoplot(km_trt_fit)
 ```
 
 Now we do the analysis for smaller sample sizes:
@@ -124,12 +127,20 @@ Now we do the analysis for smaller sample sizes:
 
 mfit <- coxph(Surv(time, status) ~ IsBorrowerHomeowner + LoanOriginalAmount2 , data=subset_data[sample(nrow(subset_data), 1000),])
 mfit
-
 ```
 
 
-And finally we average the p-value obtained on the subsamples over 100 runs.
+And finally we average the p-value obtained on the subsamples over 100 runs. In Python I get
+{'cph_test': 0.13403668092069104, 'gaucon': 0.04515484515484516, 'gaugau': 0.0073426573426573424}
+
 ```{r}
+p_value_sum = 0
+for (i in 0:100){
+  mfit <- coxph(Surv(time, status) ~ IsBorrowerHomeowner + LoanOriginalAmount2 , data=subset_data[sample(nrow(subset_data), 1000),])
+  p_value = summary(mfit)$sctest['pvalue']
+  p_value_sum = p_value_sum + p_value
+}
+print(p_value_sum/100)
 
 ```
 
