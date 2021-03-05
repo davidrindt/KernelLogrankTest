@@ -18,7 +18,7 @@ library(psych)
 library(ggplot2)
 ```
 
-
+This downloads the data, and edits it a bit. In partifcular loan status is transformed, variables are turned into dates, the year 2006 is selected etc. This is from an online course on survival data. 
 
 ```{r}
 web <- "https://s3.amazonaws.com/udacity-hosted-downloads/ud651/prosperLoanData.csv"
@@ -56,7 +56,7 @@ loan_filtered <- loan_filtered[-loan_filtered$time < 0, ]
 ii <- format(as.Date(loan_filtered$LoanOriginationDate),'%Y') %in% c("2006")
 loan_filtered <- loan_filtered[ii, ]
 
-loan_filtered$LoanOriginalAmount2 <-  loan_filtered$LoanOriginalAmount/10000
+loan_filtered$LA <-  loan_filtered$LoanOriginalAmount/10000
 
 
 loan_data_2006_cleaned <- loan_filtered
@@ -67,10 +67,13 @@ write.csv(to_save_data, 'loan_data_2006_cleaned')
 ```{r}
 describe(loan_data_2006_cleaned)
 ```
+
+
+I did not really analyse the entire dataset much. You'd have to filter it quite carefully. Many NA's are present. Also many ' ' empty strings are present.
+
 ```{r}
 print(sum(!complete.cases(loan_data_2006[,"BorrowerState"])))
 ```
-
 
 ```{r}
 # print(colSums(is.na(loan_data_2006)))
@@ -78,28 +81,35 @@ loan_data_2006 = loan_data_2006_cleaned[, colSums(is.na(loan_data_2006_cleaned))
 # loan_data_2006 = loan_data_2006[, colSums(is.na(loan_data_2006)) == 0]
 print(colSums(loan_data_2006 == '') == 0)
 ```
+
+Select the subset of the data:
+
+
 ```{r}
 subset_data = loan_data_2006[, c("IsBorrowerHomeowner", "LoanOriginalAmount2", 'time', 'status')]
 ```
 
+
+Fit a cox model without including spline terms on all data (4954 loans, of which 1373 are observed events. I.e. 28 % of the events is observed.). This results in significant effect. Overall p-value is p=4.358e-06. 
+
 ```{r}
 mfit <- coxph(Surv(time, status) ~ IsBorrowerHomeowner + LoanOriginalAmount2, data=subset_data)
 mfit
-termplot(mfit, term=2, se=TRUE, col.term=1, col.se=1)
-
-ptemp <- termplot(mfit, se=TRUE, plot=FALSE)
-```
-```{r}
 ```
 
 
+Now we fit again a model on all the data, but we include spline terms for the LoanOriginalAmount2. With a spline of order 3 the overall p-value is p=9e-09. The plot seems to suggest medium sized loans have the least risk to default. 
+
+
 ```{r}
-mfit <- coxph(Surv(time, status) ~ IsBorrowerHomeowner + pspline(LoanOriginalAmount2,2) , data=subset_data)
+mfit <- coxph(Surv(time, status) ~ IsBorrowerHomeowner + pspline(LoanOriginalAmount2, 3) , data=subset_data)
 mfit
 termplot(mfit, term=2, se=TRUE, col.term=1, col.se=1)
 
 ptemp <- termplot(mfit, se=TRUE, plot=FALSE)
 ```
+
+We now plot the two KM curves for the binary variable IsBorrowerHomeowner. Actually the CPH assumption seems quite fine, except for a couple of observations at the end. 
 
 
 ```{r}
@@ -107,7 +117,22 @@ km_trt_fit <- survfit(Surv(time, status) ~ IsBorrowerHomeowner, data=subset_data
 autoplot(km_trt_fit)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+Now we do the analysis for smaller sample sizes:
+
+
+```{r}
+
+mfit <- coxph(Surv(time, status) ~ IsBorrowerHomeowner + LoanOriginalAmount2 , data=subset_data[sample(nrow(subset_data), 1000),])
+mfit
+
+```
+
+
+And finally we average the p-value obtained on the subsamples over 100 runs.
+```{r}
+
+```
+
 
 When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
 
