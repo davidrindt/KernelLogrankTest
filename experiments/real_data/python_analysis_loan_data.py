@@ -17,6 +17,7 @@ import pandas as pd
 from utils.survival_scatter_plot import survival_scatter_plot
 import wild_bootstrap_LR  as wild_bootstrap_LR
 import pickle
+from tqdm import tqdm
 import h5py
 
 np.random.seed(1)
@@ -24,19 +25,19 @@ np.random.seed(1)
 # Load data
 
 loan_data = pd.read_csv('../../data/loan_data')
-print(loan_data)
 IsBorrowerHomeowner_map = {True: 0,
                            False: 1}
 loan_data.IsBorrowerHomeowner = loan_data.IsBorrowerHomeowner.map(IsBorrowerHomeowner_map)
 print(loan_data.shape)
 full_data = loan_data
 covariates = ['LoanOriginalAmount2', 'IsBorrowerHomeowner']
-
+to_save_data = full_data[['status', 'time', 'LoanOriginalAmount2', 'IsBorrowerHomeowner' ]]
+to_save_data.to_csv('selected_loan_data.csv')
 # Do experiment
 
 sample_size = 1000
-B = 100
-num_repetitions = 10
+B = 10000
+num_repetitions = 1000
 kernels = [
     # ['linfis', 'con'],
     # ['lin', 'con'],
@@ -49,8 +50,7 @@ p_value_dict['cph_test'] = 0
 for kx, kz in kernels:
     p_value_dict[kx[0] + kz] = 0
 
-for repetition in range(num_repetitions):
-    print(repetition)
+for repetition in tqdm(range(num_repetitions)):
     data = pd.DataFrame(full_data.sample(sample_size))
     x = np.array(data[covariates])
     z = np.array(data.time)
@@ -86,6 +86,6 @@ if num_repetitions >9 and B >9:
         pickle.dump(to_pickle_dict, f)
 
 
-    with open('loan_data_result.pickle', 'r') as f:
+    with open('loan_data_result.pickle', 'rb') as f:
         dic = pickle.load(f)
         print('loaded dic', dic)
