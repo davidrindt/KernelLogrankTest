@@ -22,7 +22,7 @@ def wild_bootstrap_test_logrank_covariates(x,
                                            kernel_parameters_z=None,
                                            seed=1,
                                            num_bootstrap_statistics=1999,
-                                           fast_computation=False):
+                                           fast_computation=True):
 
     local_state = np.random.RandomState(seed)
     n = np.shape(x)[0]

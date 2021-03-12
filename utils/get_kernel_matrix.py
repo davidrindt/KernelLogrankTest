@@ -28,6 +28,7 @@ def get_total_kernel_matrix(X, kernels, kernel_parameters=None, d=None):
             kernel_parameters = [None for _ in range(p)]
         Kx = np.ones((n, n))
         for i, kernel, parameter in zip(np.arange(p), kernels, kernel_parameters):
+            print(i)
             m = get_kernel_matrix(X[:, i][:, None], kernel=kernel, parameter=parameter)
             Kx *= m
 
@@ -60,8 +61,8 @@ def get_kernel_matrix(X, kernel, parameter=None):
         k = PolynomialKernel.PolynomialKernel(degree=parameter)
         Kx = k.kernel(X)
     elif kernel == 'bin':
-        f = lambda a, b: 0 if a == b else 0.6
-        Kx = 1.5 * np.ones((n, n)) - squareform(pdist(X, f))
+        f = lambda a, b: 0 if a == b else 0.5
+        Kx = 1 * np.ones((n, n)) - squareform(pdist(X, f))
     elif kernel == 'con':
         Kx = np.ones((n, n))
     else:
@@ -86,8 +87,8 @@ if __name__ == '__main__':
     print(Kx)
 
     X = np.random.multivariate_normal(np.zeros(2), cov=np.identity(2), size=n)
-    kernels = 'gau'
-    params = None
+    kernels = ['gau', 'gau']
+    params = [10., 10.]
     Kx = get_total_kernel_matrix(X, kernels, params)
     print(Kx)
     
