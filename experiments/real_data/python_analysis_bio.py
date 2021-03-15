@@ -23,13 +23,14 @@ import h5py
 np.random.seed(1)
 
 # Load data
-covariates = ['bfb']
+
+covariates = ['bfb', 'log2heal\r']
 
 biofeedback = pd.read_csv('../../data/biofeedback.txt', sep='\t', lineterminator='\n')
 biofeedback.to_csv('../../data/biofeedback_csv.csv')
 
 biofeedback.to_csv('../../data/biofeedback_csv.csv')
-
+print(biofeedback.head())
 full_data = biofeedback
 B = 10000
 sample_size = 33

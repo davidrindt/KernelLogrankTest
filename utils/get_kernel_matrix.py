@@ -22,19 +22,20 @@ def get_total_kernel_matrix(X, kernels, kernel_parameters=None, d=None):
     X = ( X - X.mean(axis=0) ) / X.std(axis=0)
     n, p = X.shape
 
-
     if (type(kernels) == list):
         if kernel_parameters is None:
             kernel_parameters = [None for _ in range(p)]
         Kx = np.ones((n, n))
         for i, kernel, parameter in zip(np.arange(p), kernels, kernel_parameters):
-            print(i)
             m = get_kernel_matrix(X[:, i][:, None], kernel=kernel, parameter=parameter)
             Kx *= m
 
     elif type(kernels) is str:
         Kx = get_kernel_matrix(X, kernels, kernel_parameters)
 
+    else:
+        Kx = 1
+        print("Error")
     return Kx
 
 def get_kernel_matrix(X, kernel, parameter=None):

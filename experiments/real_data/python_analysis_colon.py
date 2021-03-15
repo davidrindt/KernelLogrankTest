@@ -21,15 +21,35 @@ import h5py
 import get_kernel_matrix
 
 np.random.seed(1)
+B = 5000
+
+# Load data
 
 colon = pd.read_csv('../../data/colon')
 colon = colon[colon.etype == 2]
-colon = pd.get_dummies(colon)
-full_data = colon
+covariates = ['age', 'perfor', 'sex', 'obstruct', 'adhere', 'surg', 'extent']
+full_data = colon[covariates + ['time', 'status']]
 
-# print(colon)
-# print(colon.age, colon.sex, colon.perfor, colon.adhere, colon.surg, colon.perfor, colon.obstruct, colon.obstruct)
-# print(colon.perfor.sum())  # perfor has very few ones (way less than 1 percent)
+
+# Define function to get the kernel
+
+def helper_function(covariate):
+    if covariate in ['age', 'extent']:
+        kernel = 'gau'
+    else:
+        kernel = 'bin'
+    return kernel
+
+def get_kernels_covariates(covariates):
+    if type(covariates) == str:
+        kernel = helper_function(covariates)
+    else:
+        kernel = []
+        for covariate in covariates:
+            kernel.append(helper_function(covariate))
+    return kernel
+
+
 
 covariates_list = [
     'age',  # 1
@@ -41,78 +61,40 @@ covariates_list = [
     ['age', 'perfor', 'adhere'],  # 7
     ['age', 'perfor', 'sex'],  # 8
     ['age', 'adhere', 'sex'],  # 9
-    ['age', 'sex', 'surg']  # 10
+    ['age', 'sex', 'surg'],  # 10
+    ['obstruct', 'sex', 'surg'],
+    ['adhere', 'sex', 'extent'],
+    ['adhere', 'sex', 'surg'],
+    ['sex', 'extent', 'surg']
 ]
 
-kernels_list = [
-    [['gau', 'con'], ['gau', 'gau']],  # 1
-    [[['gau', 'bin'], 'con'], [['gau', 'bin'], 'gau']],  # 2
-    [[['gau', 'bin'], 'con'], [['gau', 'bin'], 'gau']],  # 3
-    [[['bin', 'bin'], 'con'], [['bin', 'bin'], 'gau']],  # 4
-    [[['gau', 'bin', 'bin'], 'con'], [['gau', 'bin', 'bin'], 'gau']],  # 5
-    [[['gau', 'bin', 'bin'], 'con'], [['gau', 'bin', 'bin'], 'gau']],  # 6
-    [[['gau', 'bin', 'bin'], 'con'], [['gau', 'bin', 'bin'], 'gau']],  # 7
-    [[['gau', 'bin', 'bin'], 'con'], [['gau', 'bin', 'bin'], 'gau']],  # 8
-    [[['gau', 'bin', 'bin'], 'con'], [['gau', 'bin', 'bin'], 'gau']],  # 9
-    [[['gau', 'bin', 'bin'], 'con'], [['gau', 'bin', 'bin'], 'gau']],  # 10
-]
-
-kernel_parameters_list = [
-    [[3., None], [3., 0.5]],  # 1
-    [[[3., None], None], [[3., None], 0.5]],  # 2
-    [[[3., None], None], [[3., None], 0.5]],  # 3
-    [[[None, None], None], [[None, None], 0.5]],  # 4
-    [[[3., None, None], None], [[3., None, None], 0.5]],  # 5
-    [[[3., None, None], None], [[3., None, None], 0.5]],  # 6
-    [[[3., None, None], None], [[3., None, None], 0.5]],  # 7
-    [[[3., None, None], None], [[3., None, None], 0.5]],  # 8
-    [[[3., None, None], None], [[3., None, None], 0.5]],  # 9
-    [[[3., None, None], None], [[3., None, None], 0.5]],  # 10
-]
-
-kernel_parameters_list = [
-    [[None, None], [None, None]],  # 1
-    [[None, None], [None, None]],  # 2
-    [[None, None], [None, None]],  # 3
-    [[None, None], [None, None]],  # 4
-    [[None, None], [None, None]],  # 5
-    [[None, None], [None, None]],  # 6
-    [[None, None], [None, None]],  # 7
-    [[None, None], [None, None]],  # 8
-    [[None, None], [None, None]],  # 9
-    [[None, None], [None, None]],  # 10
-]
-
-
-
-kernel_names = [
-    'gaucon', 'gaugau'
-]
-
-B = 1000
-
-for kernels, kernel_parameters, covariates in zip(kernels_list, kernel_parameters_list, covariates_list): # the two kernels for this scenario
+for covariates in covariates_list: # the two kernels for this scenario
     print('covariates:', covariates)
     p_value_dict = {
         'cph': 0,
         'gaucon': 0,
         'gaugau': 0
     }
-    # data = pd.DataFrame(full_data.sample(sample_size))
+
     data = full_data
     n = data.shape[0]
     x = np.array(data[covariates]).reshape(n, -1)
     z = np.array(data.time)
     d = np.array(data.status)
-    for kernel_name, kernel_parameter, kernel in zip(kernel_names, kernel_parameters, kernels): # select one of the kernels
-        kx, kz = kernel # split into x and z kernel
-        print(get_kernel_matrix.get_total_kernel_matrix(x, kx, kernel_parameters=None, d=None))
-        # print('kernel x', kx, 'kernel z', kz)
-        x_parameters, z_parameters = kernel_parameter
-        # print(kernel, kernel_parameter)
-        v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
-            x=x, z=z, d=d, kernels_x=kx, kernel_z=kz, kernel_parameters_x=x_parameters, kernel_parameters_z=z_parameters, num_bootstrap_statistics=B)
-        p_value_dict[kernel_name] += p
+
+    kx = get_kernels_covariates(covariates)
+
+    # Gaucon
+    v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
+        x=x, z=z, d=d, kernels_x=kx, kernel_z='con', num_bootstrap_statistics=B)
+    p_value_dict['gaucon'] += p
+
+    # Gaugau
+    v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
+        x=x, z=z, d=d, kernels_x=kx, kernel_z='gau', num_bootstrap_statistics=B)
+    p_value_dict['gaugau'] += p
+
+    # CPH
     try:
         p = CPH_test(x=x, z=z, d=d)
     except:
