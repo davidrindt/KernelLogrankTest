@@ -16,8 +16,7 @@ def CPH_test(x,z,d,alpha=0.05,print_score=False):
     cph = CoxPHFitter()
     cph.fit(df, duration_col='z', event_col='d', show_progress=False)
     test_stat, degrees_freedom, minus_log2_p = cph._compute_likelihood_ratio_test()
-    # print('first try', chisq_test(test_stat, degrees_freedom))
-    p = cph.summary['p'].to_numpy()[0]
+    p = chisq_test(test_stat, degrees_freedom)
     return p
 
 if __name__ == '__main__':
