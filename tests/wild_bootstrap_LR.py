@@ -76,26 +76,27 @@ def wild_bootstrap_test_logrank_covariates(x,
         statistic_list[b + 1] = bootstrap_statistic
 
     vec = pd.Series(statistic_list)
-    vec = vec.sample(frac=1).rank(method='first')
-    k = vec[0]
-    return original_statistic, (num_bootstrap_statistics - k + 1) / (num_bootstrap_statistics + 1)
+    ranks = vec.sample(frac=1).rank(method='first', ascending=False)
+    rank = ranks[0]
+    p = (rank - 1) / (num_bootstrap_statistics + 1)
+    return original_statistic, p
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
     # Generate some data
-    local_state = np.random.RandomState(1)
-    n = 200
-    dim = 10
-    x = local_state.multivariate_normal(mean=np.zeros(dim), cov=np.identity(dim), size=n)
-    c = np.zeros(n)
-    rowsum = np.sum(x, axis=1)
-    for v in range(n):
-        c[v] = local_state.exponential(np.exp((rowsum[v] / 8)))
-    t = local_state.exponential(.6, size=n)
-    d = np.int64(c > t)
-    z = np.minimum(t, c)
-
-    # Run the test
-    print(wild_bootstrap_test_logrank_covariates(x, z, d, ['gau'], 'gau'))
-    print(wild_bootstrap_test_logrank_covariates(x, z, d, ['gau'], 'gau', fast_computation=True))
+    # local_state = np.random.RandomState(1)
+    # n = 200
+    # dim = 10
+    # x = local_state.multivariate_normal(mean=np.zeros(dim), cov=np.identity(dim), size=n)
+    # c = np.zeros(n)
+    # rowsum = np.sum(x, axis=1)
+    # for v in range(n):
+    #     c[v] = local_state.exponential(np.exp((rowsum[v] / 8)))
+    # t = local_state.exponential(.6, size=n)
+    # d = np.int64(c > t)
+    # z = np.minimum(t, c)
+    #
+    # # Run the test
+    # print(wild_bootstrap_test_logrank_covariates(x, z, d, ['gau'], 'gau'))
+    # print(wild_bootstrap_test_logrank_covariates(x, z, d, ['gau'], 'gau', fast_computation=True))

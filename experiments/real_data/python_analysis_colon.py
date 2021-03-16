@@ -20,9 +20,8 @@ import pickle
 import h5py
 import get_kernel_matrix
 
-np.random.seed(1)
-B = 5000
-
+B = 10000
+seed=123
 # Load data
 
 colon = pd.read_csv('../../data/colon')
@@ -87,12 +86,12 @@ for covariates in covariates_list: # the two kernels for this scenario
 
     # Gaucon
     v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
-        x=x, z=z, d=d, kernels_x=kx, kernel_z='con', num_bootstrap_statistics=B)
+        x=x, z=z, d=d, kernels_x=kx, kernel_z='con', num_bootstrap_statistics=B, seed=seed)
     p_value_dict['gaucon'] += p
 
     # Gaugau
     v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
-        x=x, z=z, d=d, kernels_x=kx, kernel_z='gau', num_bootstrap_statistics=B)
+        x=x, z=z, d=d, kernels_x=kx, kernel_z='gau', num_bootstrap_statistics=B, seed=seed)
     p_value_dict['gaugau'] += p
 
     # CPH

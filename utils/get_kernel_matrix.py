@@ -71,28 +71,28 @@ def get_kernel_matrix(X, kernel, parameter=None):
     return Kx
 
 
-if __name__ == '__main__':
-    n = 6
-    X = np.random.binomial(1, 0.5, size=n)
-    print(X)
-    X = X[:, None]
-    print('X', X)
-    print(' the kernel metrix', get_kernel_matrix(X, 'bin'))
-
-    X = np.zeros((n,3))
-    X[:, 0] = np.random.binomial(1, 0.5, size=n)
-    X[:, 1:] = np.random.multivariate_normal(np.zeros(2), cov=np.identity(2), size=n)
-    kernels = ['bin', 'gau', 'gau']
-    params = None
-    Kx = get_total_kernel_matrix(X, kernels, params)
-    print(Kx)
-
-    X = np.random.multivariate_normal(np.zeros(2), cov=np.identity(2), size=n)
-    kernels = ['gau', 'gau']
-    params = [10., 10.]
-    Kx = get_total_kernel_matrix(X, kernels, params)
-    print(Kx)
-    
+# if __name__ == '__main__':
+    # n = 6
+    # X = np.random.binomial(1, 0.5, size=n)
+    # print(X)
+    # X = X[:, None]
+    # print('X', X)
+    # print(' the kernel metrix', get_kernel_matrix(X, 'bin'))
+    #
+    # X = np.zeros((n,3))
+    # X[:, 0] = np.random.binomial(1, 0.5, size=n)
+    # X[:, 1:] = np.random.multivariate_normal(np.zeros(2), cov=np.identity(2), size=n)
+    # kernels = ['bin', 'gau', 'gau']
+    # params = None
+    # Kx = get_total_kernel_matrix(X, kernels, params)
+    # print(Kx)
+    #
+    # X = np.random.multivariate_normal(np.zeros(2), cov=np.identity(2), size=n)
+    # kernels = ['gau', 'gau']
+    # params = [10., 10.]
+    # Kx = get_total_kernel_matrix(X, kernels, params)
+    # print(Kx)
+    #
     
     
     
