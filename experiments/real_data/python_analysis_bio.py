@@ -20,11 +20,11 @@ import pickle
 from tqdm import tqdm
 import h5py
 
-np.random.seed(1)
 
 # Load data
+seed=1
 
-covariates = ['theal']
+covariates = ['bfb']
 
 biofeedback = pd.read_csv('../../data/biofeedback.txt', sep='\t', lineterminator='\n')
 biofeedback.to_csv('../../data/biofeedback_csv.csv')
@@ -33,65 +33,72 @@ biofeedback.to_csv('../../data/biofeedback_csv.csv')
 print(biofeedback.head())
 full_data = biofeedback
 B = 10000
-sample_size = 33
 num_repetitions = 1
 
 print('mean', biofeedback.success.mean())
 
-kernels = [
-    # ['linfis', 'con'],
-    # ['lin', 'con'],
-    [['gau', 'gau', 'gau', 'gau', 'bin', 'bin', 'bin', 'bin', 'gau'], 'con'],
-    [['gau', 'gau', 'gau', 'gau', 'bin', 'bin', 'bin', 'bin', 'gau'], 'gau'],
-    # ['lin', 'gau'],
+covariates_list = [
+    'bfb',
+    'theal',
+    ['bfb', 'theal'],
+    ['bfb', 'log2heal']
 ]
+def helper_function(covariate):
+    if covariate in ['bfb']:
+        kernel = 'bin'
+    else:
+        kernel = 'gau'
+    return kernel
 
-kernels = [
-    # ['linfis', 'con'],
-    # ['lin', 'con'],
-    ['gau', 'con'],
-    ['gau', 'gau'],
-    # ['lin', 'gau'],
-]
+def get_kernels_covariates(covariates):
+    if type(covariates) == str:
+        kernel = helper_function(covariates)
+    else:
+        kernel = []
+        for covariate in covariates:
+            kernel.append(helper_function(covariate))
+    return kernel
 
-kernels = [
-    # ['linfis', 'con'],
-    # ['lin', 'con'],
-    [['gau'], 'con'],
-    [['gau'], 'gau'],
-    # ['lin', 'gau'],
-]
 
-p_value_dict = {}
-p_value_dict['cph'] = 0
-kernel_names = ['gaucon', 'gaugau']
-for name in kernel_names:
-    p_value_dict[name] = 0
 
-for repetition in range(num_repetitions):
-    data = full_data.sample(sample_size)
-    x = np.array(data[covariates])
+for covariates in covariates_list:
+    print('covariates:', covariates)
+    p_value_dict = {
+        'cph': 0,
+        'gaucon': 0,
+        'gaugau': 0
+    }
+
+    data = full_data
+    n = data.shape[0]
+    x = np.array(data[covariates]).reshape(n, -1)
     z = np.array(data.thdur)
     d = np.array(data.success)
-    for kernel, kernel_name in zip(kernels, kernel_names):
-        kx, kz = kernel
-        v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
-            x=x, z=z, d=d, kernels_x=kx, kernel_z=kz, num_bootstrap_statistics=B, fast_computation=False)
-        p_value_dict[kernel_name] += p
-        print(p)
+
+    kx = get_kernels_covariates(covariates)
+    print('kernels:', kx)
+
+    # Gaucon
+    v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
+        x=x, z=z, d=d, kernels_x=kx, kernel_z='con', num_bootstrap_statistics=B, seed=seed)
+    p_value_dict['gaucon'] += p
+
+    # Gaugau
+    v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
+        x=x, z=z, d=d, kernels_x=kx, kernel_z='gau', num_bootstrap_statistics=B, seed=seed)
+    p_value_dict['gaugau'] += p
+
+    # CPH
     try:
         p = CPH_test(x=x, z=z, d=d)
     except:
-        print('CPH test failed')
-        p = p_value_dict['cph_test']
-        print('except')
+        p = p_value_dict['cph']
     p_value_dict['cph'] += p
 
-for key, val in p_value_dict.items():
-    p_value_dict[key] = val / num_repetitions
+    for key, val in p_value_dict.items():
+        p_value_dict[key] = p_value_dict[key]
 
-print('p value dict', p_value_dict)
-
+    print(p_value_dict)
 # to_pickle_dict = {'p_values': p_value_dict, 'parameters': {
 #     'sample_size': sample_size,
 #     'kernels': kernels,

@@ -21,7 +21,7 @@ import h5py
 import get_kernel_matrix
 
 B = 10000
-seed=123
+seed= 123
 # Load data
 
 colon = pd.read_csv('../../data/colon')
@@ -54,18 +54,8 @@ def get_kernels_covariates(covariates):
 covariates_list = [
     'age',  # 1
     ['age', 'perfor'],  # 2
-    ['age', 'sex'],  # 3
-    ['obstruct', 'perfor'],  # 4
-    ['age', 'obstruct', 'perfor'],  # 5
-    ['age', 'obstruct', 'sex'],  # 6
-    ['age', 'perfor', 'adhere'],  # 7
-    ['age', 'perfor', 'sex'],  # 8
-    ['age', 'adhere', 'sex'],  # 9
-    ['age', 'sex', 'surg'],  # 10
-    ['obstruct', 'sex', 'surg'],
-    ['adhere', 'sex', 'extent'],
-    ['adhere', 'sex', 'surg'],
-    ['sex', 'extent', 'surg']
+    ['age', 'perfor', 'adhere'],
+    ['age', 'adhere']
 ]
 
 for covariates in covariates_list: # the two kernels for this scenario
@@ -83,6 +73,7 @@ for covariates in covariates_list: # the two kernels for this scenario
     d = np.array(data.status)
 
     kx = get_kernels_covariates(covariates)
+    print('kernels:', kx)
 
     # Gaucon
     v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
