@@ -30,6 +30,7 @@ colon = colon[colon.etype == 2]
 covariates = ['age', 'perfor', 'sex', 'obstruct', 'adhere', 'surg', 'extent']
 full_data = colon[covariates + ['time', 'status']]
 
+print(full_data.status.mean())
 
 # Define function to get the kernel
 
