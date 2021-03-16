@@ -62,8 +62,8 @@ def get_kernel_matrix(X, kernel, parameter=None):
         k = PolynomialKernel.PolynomialKernel(degree=parameter)
         Kx = k.kernel(X)
     elif kernel == 'bin':
-        f = lambda a, b: 0 if a == b else 0.5
-        Kx = 1 * np.ones((n, n)) - squareform(pdist(X, f))
+        f = lambda a, b: 0 if a == b else 0.6
+        Kx = 1.4 * np.ones((n, n)) - squareform(pdist(X, f))
     elif kernel == 'con':
         Kx = np.ones((n, n))
     else:

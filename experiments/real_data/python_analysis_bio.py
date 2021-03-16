@@ -24,7 +24,7 @@ np.random.seed(1)
 
 # Load data
 
-covariates = ['bfb', 'log2heal\r']
+covariates = ['theal']
 
 biofeedback = pd.read_csv('../../data/biofeedback.txt', sep='\t', lineterminator='\n')
 biofeedback.to_csv('../../data/biofeedback_csv.csv')
@@ -57,8 +57,8 @@ kernels = [
 kernels = [
     # ['linfis', 'con'],
     # ['lin', 'con'],
-    [['bin','gau'], 'con'],
-    [['bin','gau'], 'gau'],
+    [['gau'], 'con'],
+    [['gau'], 'gau'],
     # ['lin', 'gau'],
 ]
 
