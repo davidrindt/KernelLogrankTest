@@ -7,8 +7,8 @@ Created on Wed Jan 27 15:19:48 2021
 """
 
 import sys
-sys.path.append('../../tests')
-sys.path.append('../../utils')
+sys.path.append('../../kernel_logrank/tests')
+sys.path.append('../../kernel_logrank/utils')
 import numpy as np
 from wild_bootstrap_LR import wild_bootstrap_test_logrank_covariates
 from lifelines.statistics import logrank_test
@@ -17,7 +17,7 @@ import pandas as pd
 np.random.seed(1)
 
 
-gastric = pd.read_csv('../../data/gastric.csv')
+gastric = pd.read_csv('../../kernel_logrank/data/gastric.csv')
 print(gastric)
 
 # V1 is the time, V2 is the censor indicator, V3 is the group

@@ -7,16 +7,16 @@ Created on Fri Feb  5 12:54:29 2021
 """
 
 import sys
-sys.path.append('../../utils')
-sys.path.append('../../data')
-sys.path.append('../../tests')
+sys.path.append('../../kernel_logrank/utils')
+sys.path.append('../../kernel_logrank/data')
+sys.path.append('../../kernel_logrank/tests')
 from CPH_test import CPH_test
 import numpy as np
 import pandas as pd
 from survival_scatter_plot import survival_scatter_plot
 import wild_bootstrap_LR 
 import pickle
-diabetic = pd.read_csv('../../data/diabetic.csv')
+diabetic = pd.read_csv('../../kernel_logrank/data/diabetic.csv')
 diabetic.laser = pd.to_numeric(diabetic.laser, errors='ignore')
 
 for i, las in enumerate(diabetic.laser):

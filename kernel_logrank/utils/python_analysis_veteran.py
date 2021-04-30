@@ -11,14 +11,8 @@ import sys
 sys.path.append('../../utils')
 sys.path.append('../../data')
 sys.path.append('../../tests')
-from CPH_test import CPH_test
 import numpy as np
 import pandas as pd
-from utils.survival_scatter_plot import survival_scatter_plot
-import wild_bootstrap_LR  as wild_bootstrap_LR
-import pickle
-from tqdm import tqdm
-import h5py
 
 np.random.seed(1)
 

@@ -8,25 +8,20 @@ Created on Fri Feb  5 12:54:29 2021
 
 import sys
 
-sys.path.append('../../utils')
-sys.path.append('../../data')
-sys.path.append('../../tests')
+sys.path.append('../../kernel_logrank/utils')
+sys.path.append('../../kernel_logrank/data')
+sys.path.append('../../kernel_logrank/tests')
 from CPH_test import CPH_test
 import numpy as np
 import pandas as pd
-from utils.survival_scatter_plot import survival_scatter_plot
 import wild_bootstrap_LR  as wild_bootstrap_LR
-import pickle
-from tqdm import tqdm
-import h5py
-
 
 # Load data
 seed=1
 
 covariates = ['bfb']
 
-biofeedback = pd.read_csv('../../data/biofeedback.txt', sep='\t', lineterminator='\n')
+biofeedback = pd.read_csv('../../kernel_logrank/data/biofeedback.txt', sep='\t', lineterminator='\n')
 biofeedback.to_csv('../../data/biofeedback_csv.csv')
 
 biofeedback.to_csv('../../data/biofeedback_csv.csv')

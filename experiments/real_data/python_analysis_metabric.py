@@ -7,18 +7,13 @@ Created on Fri Feb  5 12:54:29 2021
 """
 
 import sys
-sys.path.append('../../utils')
-sys.path.append('../../data')
-sys.path.append('../../tests')
-import numpy as np
-import pandas as pd
-from utils.survival_scatter_plot import survival_scatter_plot
+sys.path.append('../../kernel_logrank/utils')
+sys.path.append('../../kernel_logrank/data')
+sys.path.append('../../kernel_logrank/tests')
 from CPH_test import CPH_test
 import numpy as np
 import pandas as pd
-from survival_scatter_plot import survival_scatter_plot
-import wild_bootstrap_LR 
-import pickle
+import wild_bootstrap_LR
 import h5py
 from tqdm import tqdm
 

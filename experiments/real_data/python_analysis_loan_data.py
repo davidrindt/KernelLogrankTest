@@ -8,23 +8,17 @@ Created on Fri Feb  5 12:54:29 2021
 
 import sys
 
-sys.path.append('../../utils')
-sys.path.append('../../data')
-sys.path.append('../../tests')
-from CPH_test import CPH_test
+sys.path.append('../../kernel_logrank/utils')
+sys.path.append('../../kernel_logrank/data')
+sys.path.append('../../kernel_logrank/tests')
 import numpy as np
 import pandas as pd
-from utils.survival_scatter_plot import survival_scatter_plot
-import wild_bootstrap_LR  as wild_bootstrap_LR
-import pickle
-from tqdm import tqdm
-import h5py
 
 np.random.seed(1)
 
 # Load data
 
-loan_data = pd.read_csv('../../data/loan_data')
+loan_data = pd.read_csv('../../kernel_logrank/data/loan_data')
 IsBorrowerHomeowner_map = {True: 0,
                            False: 1}
 loan_data.IsBorrowerHomeowner = loan_data.IsBorrowerHomeowner.map(IsBorrowerHomeowner_map)

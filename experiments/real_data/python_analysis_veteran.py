@@ -8,17 +8,13 @@ Created on Fri Feb  5 12:54:29 2021
 
 import sys
 
-sys.path.append('../../utils')
-sys.path.append('../../data')
-sys.path.append('../../tests')
+sys.path.append('../../kernel_logrank/utils')
+sys.path.append('../../kernel_logrank/data')
+sys.path.append('../../kernel_logrank/tests')
 from CPH_test import CPH_test
 import numpy as np
 import pandas as pd
-from utils.survival_scatter_plot import survival_scatter_plot
 import wild_bootstrap_LR  as wild_bootstrap_LR
-import pickle
-from tqdm import tqdm
-import h5py
 
 np.random.seed(1)
 
@@ -34,7 +30,7 @@ covariates = ['treat', 'diag.time' ]
 covariates_cph = covariates
 print(len(covariates))
 
-veteran_data = pd.read_csv('../../data/VA.csv')
+veteran_data = pd.read_csv('../../kernel_logrank/data/VA.csv')
 veteran_data = pd.get_dummies(veteran_data)
 cell_types = ['squamos', 'small', 'adeno', 'large']
 cell_code = [1, 2, 3, 4]
