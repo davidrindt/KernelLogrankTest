@@ -1,51 +1,10 @@
-# Compiled Source #
-###################
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.so
-*.pyc
-
-# Packages #
-############
-*.7z
-*.dmg
-*.gz
-*.iso
-*.rar
-*.tar
-*.zip
-
-# Logs and Databases #
-######################
-*.log
-*.db
-*.sqlite
-
-# OS Generated Files #
-######################
-.DS_Store
-ehthumbs.db
-Icon
-Thumbs.db
-.tmtags
-.idea
-tags
-vendor.tags
-tmtagsHistory
-.bundle
-
-# Repo Specific #
-###################
-venv/
-*.p
-*.mp4
-*.jpg
-*.pdf
-*.svg
-*.fits
-*.axy
-*.xyls
-*.npz
+*
+!*/
+!*.py
+!*.gitignore
+!*.pickle
+!*.csv
+!*.json
+!*.r
+!*.gitignore
+!*.md
