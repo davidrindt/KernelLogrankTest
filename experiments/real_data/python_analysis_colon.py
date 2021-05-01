@@ -9,7 +9,7 @@ Created on Fri Feb  5 12:54:29 2021
 import sys
 
 sys.path.append('../../kernel_logrank/utils')
-sys.path.append('../../kernel_logrank/data')
+sys.path.append('../data')
 sys.path.append('../../kernel_logrank/tests')
 from CPH_test import CPH_test
 import numpy as np
@@ -20,7 +20,7 @@ B = 10000
 seed= 123
 # Load data
 
-colon = pd.read_csv('../../kernel_logrank/data/colon')
+colon = pd.read_csv('../data/colon')
 colon = colon[colon.etype == 2]
 covariates = ['age', 'perfor', 'sex', 'obstruct', 'adhere', 'surg', 'extent']
 full_data = colon[covariates + ['time', 'status']]

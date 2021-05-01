@@ -9,7 +9,7 @@ Created on Fri Feb  5 12:54:29 2021
 import sys
 
 sys.path.append('../../kernel_logrank/utils')
-sys.path.append('../../kernel_logrank/data')
+sys.path.append('../data')
 sys.path.append('../../kernel_logrank/tests')
 from CPH_test import CPH_test
 import numpy as np
@@ -21,7 +21,7 @@ seed=1
 
 covariates = ['bfb']
 
-biofeedback = pd.read_csv('../../kernel_logrank/data/biofeedback.txt', sep='\t', lineterminator='\n')
+biofeedback = pd.read_csv('../data/biofeedback.txt', sep='\t', lineterminator='\n')
 biofeedback.to_csv('../../data/biofeedback_csv.csv')
 
 biofeedback.to_csv('../../data/biofeedback_csv.csv')

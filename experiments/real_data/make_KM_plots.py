@@ -1,7 +1,7 @@
 import sys
 import matplotlib.pyplot as plt
 sys.path.append('../../kernel_logrank/utils')
-sys.path.append('../../kernel_logrank/data')
+sys.path.append('../data')
 sys.path.append('../../kernel_logrank/tests')
 import numpy as np
 import pandas as pd
@@ -31,7 +31,7 @@ plt.rcParams['text.latex.preamble'] = "\\usepackage{type1cm}"
 data = 'colon'
 
 if data == 'biofeedback':
-    data = pd.read_csv('../../kernel_logrank/data/biofeedback.txt', sep='\t', lineterminator='\n')
+    data = pd.read_csv('../data/biofeedback.txt', sep='\t', lineterminator='\n')
     mask = (data.bfb == 1)
 
     ax = plt.subplot()
@@ -54,7 +54,7 @@ linestyles = [':', '-.', '--', '-']
 
 
 if data == 'loans':
-    data = pd.read_csv('../../kernel_logrank/data/loan_data')
+    data = pd.read_csv('../data/loan_data')
     data['loan_band'] = pd.cut(data.LoanOriginalAmount2, [0, 0.2, 0.3, 0.8, 2.6])
     plt.tight_layout()
     plt.show()
@@ -85,7 +85,7 @@ if data == 'loans':
     plt.show()
 
 if data == 'colon':
-    data = pd.read_csv('../../kernel_logrank/data/colon')
+    data = pd.read_csv('../data/colon')
     data['age_band'] = pd.qcut(data.age, 4)
     age_bands = data.age_band.unique().sort_values()
     ax = plt.subplot()
