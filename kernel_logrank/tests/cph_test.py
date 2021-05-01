@@ -3,18 +3,18 @@ import pandas as pd
 from lifelines import CoxPHFitter
 
 
-def cph_test(x, z, d):
+def cph_test(X, z, d):
     """
-    @param x: 2d numpy array
+    @param X: 2d numpy array
     @param z: 1d numpy array
     @param d: 1d numpy array
     @return: p-value of the cox test
     """
     # process the data back to a dataframe
-    n, p = np.shape(x)
+    n, p = np.shape(X)
     df = pd.DataFrame({'z': z, 'd': d})
     for j in range(p):
-        df['x' + str(j)] = x[:, j]
+        df['x' + str(j)] = X[:, j]
 
     # apply the cph test from the CoxPHFitter
     cph = CoxPHFitter()

@@ -72,13 +72,13 @@ for covariates in covariates_list: # the two kernels for this scenario
     print('kernels:', kx)
 
     # Gaucon
-    v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
-        x=x, z=z, d=d, kernels_x=kx, kernel_z='con', num_bootstrap_statistics=B, seed=seed)
+    v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(X=x, z=z, d=d, kernels_x=kx, kernel_z='con',
+                                                                    seed=seed, num_bootstrap_statistics=B)
     p_value_dict['gaucon'] += p
 
     # Gaugau
-    v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
-        x=x, z=z, d=d, kernels_x=kx, kernel_z='gau', num_bootstrap_statistics=B, seed=seed)
+    v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(X=x, z=z, d=d, kernels_x=kx, kernel_z='gau',
+                                                                    seed=seed, num_bootstrap_statistics=B)
     p_value_dict['gaugau'] += p
 
     # CPH
