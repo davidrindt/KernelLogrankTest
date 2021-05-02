@@ -20,7 +20,7 @@ def wild_bootstrap_test_logrank_covariates(X,
 
     # Define Y_matrix[i,:] to be the vector of indicators who are at risk at the i-th event time.
     Y_matrix = np.triu(np.ones(n))
-    
+
     # Define Y[i] count the number of individuals at risk at the i-th event time.
     Y = n - np.arange(n)
 

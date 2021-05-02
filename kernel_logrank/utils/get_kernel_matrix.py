@@ -21,7 +21,6 @@ def get_total_kernel_matrix(X, kernels, kernel_parameters=None, d=None):
             Kx *= m
 
     elif type(kernels) is str:
-        print('kernels', kernels)
         Kx = get_kernel_matrix(X, d, kernels, kernel_parameters)
 
     else:
