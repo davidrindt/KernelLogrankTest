@@ -131,7 +131,7 @@ def opt_hsic(X, z, d, seed=1, num_permutations=1999, verbose=False, return_synth
         result = p_val, synthetic_X, synthetic_Y
     else:
         result = p_val
-        
+
     return result
 
 
