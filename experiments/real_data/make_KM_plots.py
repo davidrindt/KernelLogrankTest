@@ -109,29 +109,4 @@ if data == 'colon':
     plt.savefig('cumulative_hazard_colon.pdf')
     plt.show()
 
-    #
-    # loan_bands = data['loan_band'].unique()
-    # band_names = [4, 3, 2, 1]
-    # ax = plt.subplot()
-    #
-    # for i in range(4):
-    #     mask = data.loan_band == loan_bands[i]
-    #     band_name = band_names[i]
-    #     data[mask]
-    #     naf = NelsonAalenFitter()
-    #     times = np.linspace(0,1500,50)
-    #
-    #     fitted = naf.fit(data.loc[mask, 'time'], data.loc[mask, 'status'],
-    #                                   label='cum_hazard')
-    #     cum_hazard_df = fitted.cumulative_hazard_
-    #
-    #     cum_hazard = cum_hazard_df['cum_hazard'].to_numpy()
-    #     times = cum_hazard_df.index.to_numpy()
-    #     ax = plt.plot(times, np.log(cum_hazard), label='G' + str(band_name), linestyle=linestyles[i])
-    #
-    # plt.legend()
-    # plt.xlabel('Time')
-    # plt.ylabel('Log cumulative hazard')
-    # plt.tight_layout()
-    # plt.show()
 
