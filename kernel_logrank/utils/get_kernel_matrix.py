@@ -1,8 +1,7 @@
 import numpy as np
-from utils.fisher_information import inv_inf_matrix
+from kernel_logrank.utils.fisher_information import inv_inf_matrix
 from kerpy import LinearKernel
 from kerpy import GaussianKernel
-from kerpy import PolynomialKernel
 from scipy.spatial.distance import pdist, squareform
 
 
@@ -12,8 +11,8 @@ def get_total_kernel_matrix(X, kernels, kernel_parameters=None, d=None):
     '''
     X = (X - X.mean(axis=0)) / X.std(axis=0)
     n, p = X.shape
-
     if type(kernels) == list:
+        assert len(kernels) == p
         if kernel_parameters is None:
             kernel_parameters = [None for _ in range(p)]
         Kx = np.ones((n, n))
@@ -22,7 +21,7 @@ def get_total_kernel_matrix(X, kernels, kernel_parameters=None, d=None):
             Kx *= m
 
     elif type(kernels) is str:
-        Kx = get_kernel_matrix(X, kernels, kernel_parameters)
+        Kx = get_kernel_matrix(X, d, kernels, kernel_parameters)
 
     else:
         Kx = 1
@@ -65,7 +64,7 @@ def get_kernel_matrix(X, d, kernel, parameter=None):
         Kx = np.ones((n, n))
 
     else:
-        print('Error, kernel not recognized')
+        print('WARNING, kernel not recognized')
 
     return Kx
 

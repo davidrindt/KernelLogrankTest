@@ -1,40 +1,29 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Feb  5 12:54:29 2021
-
-@author: rindt
-"""
-
-import sys
-
-sys.path.append('../../kernel_logrank/utils')
-sys.path.append('../data')
-sys.path.append('../../kernel_logrank/tests')
-from CPH_test import CPH_test
 import numpy as np
 import pandas as pd
-import wild_bootstrap_LR  as wild_bootstrap_LR
+from kernel_logrank.tests import wild_bootstrap_LR
+from kernel_logrank.tests.cph_test import cph_test
 
-B = 10000
-seed= 123
+# Set some numbers
+B = 1000
+seed = 1
+
 # Load data
-
 colon = pd.read_csv('../data/colon')
 colon = colon[colon.etype == 2]
 covariates = ['age', 'perfor', 'sex', 'obstruct', 'adhere', 'surg', 'extent']
 full_data = colon[covariates + ['time', 'status']]
 
-print(full_data.status.mean())
+print('percentage observed', full_data.status.mean())
 
-# Define function to get the kernel
 
+# Define a function to get the kernel
 def helper_function(covariate):
     if covariate in ['age', 'extent']:
         kernel = 'gau'
     else:
         kernel = 'bin'
     return kernel
+
 
 def get_kernels_covariates(covariates):
     if type(covariates) == str:
@@ -46,15 +35,12 @@ def get_kernels_covariates(covariates):
     return kernel
 
 
-
 covariates_list = [
-    'age',  # 1
-    ['age', 'perfor'],  # 2
+    'age',
     ['age', 'perfor', 'adhere'],
-    ['age', 'adhere']
 ]
 
-for covariates in covariates_list: # the two kernels for this scenario
+for covariates in covariates_list:  # the two kernels for this scenario
     print('covariates:', covariates)
     p_value_dict = {
         'cph': 0,
@@ -72,20 +58,17 @@ for covariates in covariates_list: # the two kernels for this scenario
     print('kernels:', kx)
 
     # Gaucon
-    v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
-        x=x, z=z, d=d, kernels_x=kx, kernel_z='con', num_bootstrap_statistics=B, seed=seed)
+    v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(X=x, z=z, d=d, kernels_x=kx, kernel_z='con',
+                                                                    seed=seed, num_bootstrap_statistics=B)
     p_value_dict['gaucon'] += p
 
     # Gaugau
-    v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(
-        x=x, z=z, d=d, kernels_x=kx, kernel_z='gau', num_bootstrap_statistics=B, seed=seed)
+    v, p = wild_bootstrap_LR.wild_bootstrap_test_logrank_covariates(X=x, z=z, d=d, kernels_x=kx, kernel_z='gau',
+                                                                    seed=seed, num_bootstrap_statistics=B)
     p_value_dict['gaugau'] += p
 
     # CPH
-    try:
-        p = CPH_test(x=x, z=z, d=d)
-    except:
-        p = p_value_dict['cph']
+    p = cph_test(X=x, z=z, d=d)
     p_value_dict['cph'] += p
 
     for key, val in p_value_dict.items():

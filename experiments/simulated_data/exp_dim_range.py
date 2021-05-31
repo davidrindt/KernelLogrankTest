@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Dec 24 16:13:32 2018
-
-@author: David
-"""
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 from multiprocessing import Pool
@@ -16,21 +8,6 @@ from matplotlib import rcParams
 import sys
 from opthsic import opt_hsic
 
-
-rcParams.update({'figure.autolayout': True})
-plt.rcParams['savefig.dpi'] = 75
-plt.rcParams['figure.autolayout'] = False
-plt.rcParams['figure.figsize'] = 10, 6
-plt.rcParams['axes.labelsize'] = 35
-plt.rcParams['axes.titlesize'] = 35
-plt.rcParams['font.size'] = 35
-plt.rcParams['lines.linewidth'] = 2.0
-plt.rcParams['lines.markersize'] = 8
-plt.rcParams['legend.fontsize'] = 35
-plt.rcParams['text.usetex'] = True
-plt.rcParams['font.family'] = "serif"
-plt.rcParams['font.serif'] = "cm"
-plt.rcParams['text.latex.preamble'] = "\\usepackage{subdepth}, \\usepackage{type1cm}"
 
 np.random.seed(1)
 num_repetitions=1000
